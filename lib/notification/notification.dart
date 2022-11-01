@@ -41,6 +41,23 @@ class LocalNotificationService{
     );
   }
 
+  static void showNotification({required String title, required String body})async{
+    AndroidNotificationDetails androidNotificationDetails =
+    const AndroidNotificationDetails(
+      "channelId",
+      "channelName",
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
+    await _notificationsPlugin.show(
+        -1,
+        title,
+        body,
+        notificationDetails
+    );
+  }
+
   static void stopNotification(id)async{
     _notificationsPlugin.cancel(id);
   }

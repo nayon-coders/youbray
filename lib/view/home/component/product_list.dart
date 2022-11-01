@@ -8,6 +8,7 @@ import 'package:yo_bray/controller/auth_controller.dart';
 import 'package:yo_bray/controller/login_shared_preference.dart';
 import 'package:yo_bray/data/model/expenses_response.dart';
 import 'package:yo_bray/data/model/product_response.dart';
+import 'package:yo_bray/notification/notification.dart';
 import 'package:yo_bray/ulits/constant.dart';
 import 'package:yo_bray/ulits/urls.dart';
 import 'package:yo_bray/ulits/utils.dart';
@@ -103,8 +104,13 @@ class _ProductTabState extends State<ProductTab> {
                       );
                     } else if (1 == value)
                       Get.toNamed(AppRoutes.edit_product_page, arguments: item);
-                    else if (2 == value)
+                    else if (2 == value){
                       setLowStock(item);
+                      LocalNotificationService.showNotification(
+                          title: "",
+                          body: "body"
+                      );
+                    }
                     else if (3 == value) {
                       Get.defaultDialog(
                         title: 'Confirm',
