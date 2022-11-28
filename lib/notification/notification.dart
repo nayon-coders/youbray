@@ -5,12 +5,26 @@ class LocalNotificationService{
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
+
+
   static void initialize() {
     // initializationSettings  for Android
-    const InitializationSettings initializationSettings =
-    InitializationSettings(
-      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+    final AndroidInitializationSettings androidInitializationSettings =
+    AndroidInitializationSettings("@mipmap/launcher_icon");
+
+    IOSInitializationSettings iosInitializationSettings = IOSInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
     );
+
+    InitializationSettings initializationSettings =
+    InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings
+    );
+
+
 
     _notificationsPlugin.initialize(
       initializationSettings,
@@ -23,7 +37,7 @@ class LocalNotificationService{
     );
   }
 
-  static void notification({required String title, required String body, dynamic scheduledDate, required int id})async{
+  static Future<NotificationDetails> notification({required String title, required String body, dynamic scheduledDate, required int id})async{
     AndroidNotificationDetails androidNotificationDetails =
         const AndroidNotificationDetails(
             "channelId",
@@ -31,6 +45,8 @@ class LocalNotificationService{
             importance: Importance.max,
             priority: Priority.high,
         );
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+
     NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
     await _notificationsPlugin.schedule(
         id,
@@ -39,9 +55,14 @@ class LocalNotificationService{
         scheduledDate,
         notificationDetails,
     );
+
+    return NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iosNotificationDetails
+    );
   }
 
-  static void showNotification({required String title, required String body})async{
+  static Future<NotificationDetails> showNotification({required String title, required String body})async{
     AndroidNotificationDetails androidNotificationDetails =
     const AndroidNotificationDetails(
       "channelId",
@@ -49,6 +70,8 @@ class LocalNotificationService{
       importance: Importance.max,
       priority: Priority.high,
     );
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+
     NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
     await _notificationsPlugin.show(
         -1,
@@ -56,10 +79,18 @@ class LocalNotificationService{
         body,
         notificationDetails
     );
+    return NotificationDetails(
+        android: androidNotificationDetails,
+        iOS: iosNotificationDetails
+    );
   }
 
   static void stopNotification(id)async{
     _notificationsPlugin.cancel(id);
+  }
+
+  static onDidReceiveLocalNotification(int id, String? title, String? body, String? payload) {
+    print("is $id");
   }
 
 }

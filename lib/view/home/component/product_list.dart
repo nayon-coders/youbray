@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yo_bray/config/app_routes.dart';
 import 'package:yo_bray/controller/auth_controller.dart';
 import 'package:yo_bray/controller/login_shared_preference.dart';
@@ -106,10 +107,7 @@ class _ProductTabState extends State<ProductTab> {
                       Get.toNamed(AppRoutes.edit_product_page, arguments: item);
                     else if (2 == value){
                       setLowStock(item);
-                      LocalNotificationService.showNotification(
-                          title: "",
-                          body: "body"
-                      );
+
                     }
                     else if (3 == value) {
                       Get.defaultDialog(
@@ -502,7 +500,7 @@ class _PostSellState extends State<PostSell> {
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _submit,
+              onPressed: ()=>_submit(quantity),
               style: ButtonStyle(
                 minimumSize:
                     MaterialStateProperty.all(Size(double.infinity, 35)),
@@ -561,7 +559,27 @@ class _PostSellState extends State<PostSell> {
     return false;
   }
 
-  Future<void> _submit() async {
+  //send notificaipn
+  Future<void> _submit(quantity) async {
+    var stack = int.parse(selectedItem!.quantity!) - quantity;
+    SharedPreferences _prsf = await SharedPreferences.getInstance();
+    var lowStack = _prsf.getInt("setLowStack");
+    var showLowStack = _prsf.getInt("setLowStockForAll");
+    int allLowStack = showLowStack != null ? showLowStack : 0;
+    print(lowStack);
+
+    if(stack <= allLowStack){
+      LocalNotificationService.showNotification(title: "${widget.item.title}", body: "low in stock");
+    }else {
+      if (stack <= num.parse("$lowStack")) {
+        print("you have low stack");
+        LocalNotificationService.showNotification(
+            title: "${widget.item.title} ", body: "low in stock");
+      } else {
+        print("you don't have low stack");
+      }
+    }
+
     if (getItemQuantiti() < 0) {
       errorToast("Out of stock Cant\'t sell");
       Get.back();
@@ -698,7 +716,10 @@ class _SetLowStockState extends State<SetLowStock> {
     );
   }
 
+  //set low stack
   Future<void> _submit() async {
+    SharedPreferences _prfs = await SharedPreferences.getInstance();
+    _prfs.setInt("setLowStack", int.parse(amountController.text));
     final formState = _formKey.currentState;
     formState!.save();
     if (!formState.validate()) return;

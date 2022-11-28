@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yo_bray/config/app_routes.dart';
 import 'package:yo_bray/controller/login_shared_preference.dart';
 import 'package:yo_bray/ulits/constant.dart';
@@ -86,6 +87,8 @@ class _SettingPageState extends State<SettingPage> {
                   if (_titleController.text.isNotEmpty) {
                     int value = int.tryParse(_titleController.text) ?? 0;
                     await LoginSharedPreference.setLowStock(value);
+                    SharedPreferences _prfs = await SharedPreferences.getInstance();
+                    _prfs.setInt("setLowStockForAll", value);
                     setState(() {});
                   }
                   Navigator.pop(context);

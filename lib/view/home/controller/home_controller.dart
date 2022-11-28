@@ -135,6 +135,7 @@ class HomeController extends GetConnect {
       if (response.isOk) {
         final productResponse = productResponseFromJson(response.body);
         productList.addAll(productResponse.data!);
+        print("product data ${productResponse.data!}");
       }
     } catch (e) {
       errorToast(e.toString());
@@ -238,7 +239,7 @@ class HomeController extends GetConnect {
       Response response = await get(Urls.expenseName, headers: header);
       if (response.isOk) {
         final dataBody = json.decode(response.body)['data'];
-
+          print("data body $dataBody");
         final productResponse =
             List<ExpensType>.from(dataBody.map((x) => ExpensType.fromJson(x)));
         expensesList.addAll(productResponse);
@@ -328,21 +329,23 @@ class HomeController extends GetConnect {
         fetchJobs(DateTime.now());
         successToast('Job post create successful');
 
+        print("start data is: ${DateTime.parse(job.startingTime!).subtract(Duration(minutes: 10))}");
+        print("end data is: ${DateTime.parse(job.endingTime!).subtract(Duration(minutes: 2))}");
 
         //set notification here
         LocalNotificationService.notification(
-            id: DateTime.parse(job.startingTime!).millisecondsSinceEpoch ~/ 1000,
-            title: "${job.jobTitle}",
-            body: "This job will be start after 10 Minetus",
-            scheduledDate: DateTime.parse(job.startingTime!).subtract(Duration(minutes: 10))
+          id: DateTime.parse(job.endingTime!).millisecondsSinceEpoch ~/ 10000,
+          title: "${job.jobTitle}",
+          body: "This job will be start after 10 Minutes",
+          scheduledDate: DateTime.parse("${job.startingTime!}").subtract(Duration(minutes: 10)),
         );
 
         //set notification here
         LocalNotificationService.notification(
             id: DateTime.parse(job.startingTime!).millisecondsSinceEpoch ~/ 1000,
             title: "${job.jobTitle}",
-            body: "This job is be start",
-            scheduledDate: DateTime.parse(job.startingTime!),
+            body: "Job is be start",
+            scheduledDate: DateTime.parse("${job.startingTime!}"),
         );
 
         //set notification here

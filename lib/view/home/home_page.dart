@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yo_bray/ulits/constant.dart';
 import 'package:yo_bray/widgets/drawer_widget.dart';
+import '../../notification/notification.dart';
 import 'component/job_list.dart';
 import 'component/product_list.dart';
 import 'controller/home_controller.dart';
@@ -15,6 +16,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final homeController = Get.put(HomeController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sendWeeklyNotification();
+
+  }
+
+  void sendWeeklyNotification(){
+    print("app is open");
+    //set notification here
+    print(DateTime.now());
+    LocalNotificationService.notification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title: "Hi! It's Yobray",
+        body: "Success waits for no man - make your first sale today",
+        scheduledDate: DateTime.now().weekday
+    );
+
+  }
 
   @override
   Widget build(BuildContext context) {
